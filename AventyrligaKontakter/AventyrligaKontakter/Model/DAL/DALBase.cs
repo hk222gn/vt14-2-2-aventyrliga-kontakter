@@ -11,7 +11,7 @@ namespace AventyrligaKontakter.Model.DAL
     {
         private static string _connectionString;
 
-        protected SqlConnection CreateConnection()
+        protected static SqlConnection CreateConnection()
         {
             return new SqlConnection(_connectionString);
         }

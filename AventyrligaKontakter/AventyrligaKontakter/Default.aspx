@@ -5,16 +5,19 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <title></title>
+    <link rel="stylesheet" type="text/css" href="styles/style.css" />
 </head>
 <body>
     <form id="form1" runat="server">
-    <div>
+    <div id="main">
         <div>
             <asp:ValidationSummary ID="ValidationSummary" HeaderText="Fel har inträffat, åtgärda dessa och försök igen!" DisplayMode="BulletList" runat="server" />
             <asp:ValidationSummary ID="EditValidationSummary" HeaderText="Fel har inträffat, åtgärda dessa och försök igen!" DisplayMode="BulletList" runat="server" ValidationGroup="Edit" />
+            <asp:Label ID="ResultLabel" runat="server" Text="Operationen gick bra" Visible="false">
+                <asp:Button ID="RemoveLabelButton" runat="server" Text="Close" CausesValidation="false" OnClick="RemoveLabelButton_Click" /></asp:Label>
         </div>
         <asp:ListView ID="ContactListView" runat="server" ItemType="AventyrligaKontakter.Model.Contact"
-            SelectMethod="ContactListView_GetData"
+            SelectMethod="ContactListView_GetDataPageWise"
             InsertMethod="ContactListView_InsertItem"
             UpdateMethod="ContactListView_UpdateItem"
             DeleteMethod="ContactListView_DeleteItem"
@@ -34,8 +37,7 @@
                         </th>
                     </tr>
                 </table>
-                <%-- Implementera DataPager --%>
-                <asp:DataPager ID="DataPager1" runat="server">
+                <asp:DataPager ID="DataPager1" runat="server" PageSize="20">
                     <fields>
                         <asp:NextPreviousPagerField ShowFirstPageButton="true"  
                             FirstPageText="<<" 
@@ -48,7 +50,6 @@
                             ShowFirstPageButton="false" 
                             ShowPreviousPageButton="false" />
                     </fields>
-
                 </asp:DataPager>
             </LayoutTemplate>
             <ItemTemplate>

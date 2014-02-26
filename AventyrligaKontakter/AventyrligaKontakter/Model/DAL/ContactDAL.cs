@@ -18,12 +18,12 @@ namespace AventyrligaKontakter.Model.DAL
                     SqlCommand cmd = new SqlCommand("Person.uspRemoveContact");
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@ContactID", contactID);
+                    cmd.Parameters.Add("@ContactID", SqlDbType.Int, 4).Value = contactID;
+                    //cmd.Parameters.AddWithValue("@ContactID", contactID);
 
                     connection.Open();
 
                     cmd.ExecuteNonQuery();
-                    //Klar?
                 }
                 catch (Exception)
                 {
@@ -34,7 +34,7 @@ namespace AventyrligaKontakter.Model.DAL
 
         public Contact GetContactByID(int contactID)
         {
-            using (SqlConnection connection = CreateConnection())
+            using (var connection = CreateConnection())
             {
                 try
                 {
@@ -74,7 +74,7 @@ namespace AventyrligaKontakter.Model.DAL
 
         public IEnumerable<Contact> GetContacts()
         {
-            using (SqlConnection connection = CreateConnection())
+            using (var connection = CreateConnection())
             {
                 try
                 {
@@ -103,6 +103,8 @@ namespace AventyrligaKontakter.Model.DAL
                             });
                         }
                     }
+                    contact.TrimExcess();
+
                     return contact;
                 }
                 catch (Exception)
@@ -111,37 +113,60 @@ namespace AventyrligaKontakter.Model.DAL
                 }
             }
         }
+
         public IEnumerable<Contact> GetContactsPageWise(int maximumRows, int startRowIndex, out int totalRowCount)
         {
-            using (SqlConnection connection = CreateConnection())
+            using (var connection = CreateConnection())
             {
                 try
                 {
+                    var contacts = new List<Contact>(maximumRows);
+
                     SqlCommand cmd = new SqlCommand("Person.uspGetContactsPageWise");
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    var contacts = GetContacts();
+                    cmd.Parameters.Add("@PageIndex", SqlDbType.Int, 4).Value = startRowIndex / maximumRows + 1;
+                    cmd.Parameters.Add("@PageSize", SqlDbType.Int, 4).Value = maximumRows;
+                    cmd.Parameters.Add("@RecordCount", SqlDbType.Int, 4).Direction = ParameterDirection.Output;
 
-                    cmd.Parameters.Add("@PageIndex", SqlDbType.Int, 4).Value = contacts;
+                    connection.Open();
 
-                    //INTE KLAR YO
+                    cmd.ExecuteNonQuery(); //Här kastas ett error.
+
+                    totalRowCount = (int)cmd.Parameters["@RecordCount"].Value;
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        var contactID = reader.GetOrdinal("ContactID");
+                        var FirstName = reader.GetOrdinal("FirstName");
+                        var LastName = reader.GetOrdinal("LastName");
+                        var EmailAdress = reader.GetOrdinal("EmailAdress");
+
+                        while (reader.Read())
+                        {
+                            contacts.Add(new Contact
+                            {
+                                ContactID = reader.GetInt32(contactID),
+                                FirstName = reader.GetString(FirstName),
+                                LastName = reader.GetString(LastName),
+                                EmailAdress = reader.GetString(EmailAdress)
+                            });
+                        }
+                    }
+                    contacts.TrimExcess();
+
+                    return contacts;
                 }
                 catch (Exception)
                 {
-
-                    throw;
+                    throw new ApplicationException("Something went wrong when attempting to get contacts page wise");
                 }
             }
-            //IMP
-            //LEM
-            //ENT
-            //ERA
-            throw new NotImplementedException();
         }
 
         public void InsertContact(Contact contact)
         {
-            using (SqlConnection connection = CreateConnection())
+            using (var connection = CreateConnection())
             {
                 try
                 {
@@ -185,7 +210,6 @@ namespace AventyrligaKontakter.Model.DAL
                     connection.Open();
 
                     cmd.ExecuteNonQuery();
-                    //Klar?
                 }
                 catch (Exception)
                 {
