@@ -35,7 +35,21 @@
                     </tr>
                 </table>
                 <%-- Implementera DataPager --%>
-                <asp:DataPager ID="DataPager1" runat="server"></asp:DataPager>
+                <asp:DataPager ID="DataPager1" runat="server">
+                    <fields>
+                        <asp:NextPreviousPagerField ShowFirstPageButton="true"  
+                            FirstPageText="<<" 
+                            ShowNextPageButton="false" 
+                            ShowPreviousPageButton="false"/>
+                        <asp:NumericPagerField />
+                        <asp:NextPreviousPagerField 
+                            ShowLastPageButton="true" 
+                            LastPageText=">>"
+                            ShowFirstPageButton="false" 
+                            ShowPreviousPageButton="false" />
+                    </fields>
+
+                </asp:DataPager>
             </LayoutTemplate>
             <ItemTemplate>
                 <tr>

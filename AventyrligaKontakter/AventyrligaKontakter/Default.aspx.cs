@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AventyrligaKontakter.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -9,6 +10,12 @@ namespace AventyrligaKontakter
 {
     public partial class Default : System.Web.UI.Page
     {
+        private Service _service;
+
+        private Service Service
+        {
+            get { return _service ?? (_service = new Service()); }
+        }
         protected void Page_Load(object sender, EventArgs e)
         {
 
@@ -20,45 +27,67 @@ namespace AventyrligaKontakter
         //     int startRowIndex
         //     out int totalRowCount
         //     string sortByExpression
-        public IQueryable<AventyrligaKontakter.Model.Contact> ContactListView_GetData()
+        public IEnumerable<Contact> ContactListView_GetData(int maximumRows, int startRowIndex, out int totalRowCount)
         {
-            return null;
+            return Service.GetContactsPageWise(maximumRows, startRowIndex, out totalRowCount);
+            //try
+            //{
+            //    return Service.GetContacts();
+            //}
+            //catch (Exception)
+            //{
+            //    ModelState.AddModelError(String.Empty, "Ett fel inträffade när inläsningen av kontakter skulle utföras.");
+            //    return null;
+            //}
         }
 
-        public void ContactListView_InsertItem()
+        public void ContactListView_InsertItem(Contact contact)
         {
-            var item = new AventyrligaKontakter.Model.Contact();
-            TryUpdateModel(item);
             if (ModelState.IsValid)
             {
-                // Save changes here
-
+                try
+                {
+                    Service.SaveContact(contact);
+                }
+                catch (Exception)
+                {
+                    ModelState.AddModelError(String.Empty, "Ett fel inträffade när inläsningen av kontakter skulle utföras.");
+                }
             }
         }
 
         // The id parameter name should match the DataKeyNames value set on the control
-        public void ContactListView_UpdateItem(int id)
+        public void ContactListView_UpdateItem(int contactID)
         {
-            AventyrligaKontakter.Model.Contact item = null;
-            // Load the item here, e.g. item = MyDataLayer.Find(id);
-            if (item == null)
+            try
             {
-                // The item wasn't found
-                ModelState.AddModelError("", String.Format("Item with id {0} was not found", id));
-                return;
-            }
-            TryUpdateModel(item);
-            if (ModelState.IsValid)
-            {
-                // Save changes here, e.g. MyDataLayer.SaveChanges();
+                var contact = Service.GetContact(contactID);
+                if (contact == null)
+                {
+                    ModelState.AddModelError("", String.Format("Item with id {0} was not found", contactID));
+                    return;
+                }
 
+                if (TryUpdateModel(contact))
+                {
+                    Service.SaveContact(contact);
+                }
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError(String.Empty, "Ett fel inträffade när inläsningen av kontakter skulle utföras.");
             }
         }
-
-        // The id parameter name should match the DataKeyNames value set on the control
-        public void ContactListView_DeleteItem(int id)
+        public void ContactListView_DeleteItem(int contactID)
         {
-
+            try
+            {
+                Service.DeleteContact(contactID);
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError(String.Empty, "Ett fel inträffade när inläsningen av kontakter skulle utföras.");
+            }
         }
     }
 }

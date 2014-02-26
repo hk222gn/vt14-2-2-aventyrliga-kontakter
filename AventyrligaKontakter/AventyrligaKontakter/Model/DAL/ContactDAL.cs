@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 
@@ -9,32 +11,187 @@ namespace AventyrligaKontakter.Model.DAL
     {
         public void DeleteContact(int contactID)
         {
-            throw new NotImplementedException();
+            using (SqlConnection connection = CreateConnection())
+            {
+                try
+                {
+                    SqlCommand cmd = new SqlCommand("Person.uspRemoveContact");
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@ContactID", contactID);
+
+                    connection.Open();
+
+                    cmd.ExecuteNonQuery();
+                    //Klar?
+                }
+                catch (Exception)
+                {
+                    throw new ApplicationException("Something went wrong when attempting to update a contact");
+                }
+            }
         }
 
         public Contact GetContactByID(int contactID)
         {
-            throw new NotImplementedException();
+            using (SqlConnection connection = CreateConnection())
+            {
+                try
+                {
+                    SqlCommand cmd = new SqlCommand("Person.uspGetContact");
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@ContactID", contactID);
+
+                    connection.Open();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            var contactId = reader.GetOrdinal("ContactID");
+                            var FirstName = reader.GetOrdinal("FirstName");
+                            var LastName = reader.GetOrdinal("LastName");
+                            var EmailAdress = reader.GetOrdinal("EmailAdress");
+
+                            return new Contact
+                            {
+                                ContactID = reader.GetInt32(contactId),
+                                FirstName = reader.GetString(FirstName),
+                                LastName = reader.GetString(LastName),
+                                EmailAdress = reader.GetString(EmailAdress)
+                            };
+                        }
+                    }
+                    return null;
+                }
+                catch (Exception)
+                {
+                    throw new ApplicationException("Something went wrong when attempting to get a contact");
+                }
+            }
         }
 
         public IEnumerable<Contact> GetContacts()
         {
-            throw new NotImplementedException();
-        }
+            using (SqlConnection connection = CreateConnection())
+            {
+                try
+                {
+                
+                    var contact = new List<Contact>();
+                    var cmd = new SqlCommand("Person.uspGetContacts", connection);
+                    cmd.CommandType = CommandType.StoredProcedure;
 
+                    connection.Open();
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        var contactID = reader.GetOrdinal("ContactID");
+                        var FirstName = reader.GetOrdinal("FirstName");
+                        var LastName = reader.GetOrdinal("LastName");
+                        var EmailAdress = reader.GetOrdinal("EmailAdress");
+
+                        while (reader.Read())
+                        {
+                            contact.Add(new Contact
+                            {
+                                ContactID = reader.GetInt32(contactID),
+                                FirstName = reader.GetString(FirstName),
+                                LastName = reader.GetString(LastName),
+                                EmailAdress = reader.GetString(EmailAdress)
+                            });
+                        }
+                    }
+                    return contact;
+                }
+                catch (Exception)
+                {
+                    throw new ApplicationException("Something went wrong when attempting to get the contacts");
+                }
+            }
+        }
         public IEnumerable<Contact> GetContactsPageWise(int maximumRows, int startRowIndex, out int totalRowCount)
         {
+            using (SqlConnection connection = CreateConnection())
+            {
+                try
+                {
+                    SqlCommand cmd = new SqlCommand("Person.uspGetContactsPageWise");
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    var contacts = GetContacts();
+
+                    cmd.Parameters.Add("@PageIndex", SqlDbType.Int, 4).Value = contacts;
+
+                    //INTE KLAR YO
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+            }
+            //IMP
+            //LEM
+            //ENT
+            //ERA
             throw new NotImplementedException();
         }
 
         public void InsertContact(Contact contact)
         {
-            throw new NotImplementedException();
+            using (SqlConnection connection = CreateConnection())
+            {
+                try
+                {
+                    SqlCommand cmd = new SqlCommand("Person.uspAddContact");
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@FirstName", SqlDbType.VarChar, 50).Value = contact.FirstName;
+                    cmd.Parameters.Add("@LastName", SqlDbType.VarChar, 50).Value = contact.FirstName;
+                    cmd.Parameters.Add("@EmailAdress", SqlDbType.VarChar, 50).Value = contact.FirstName;
+
+                    cmd.Parameters.Add("@ContactID", SqlDbType.Int, 4).Value = contact.ContactID;
+
+                    connection.Open();
+
+                    cmd.ExecuteNonQuery();
+
+                    contact.ContactID = (int)cmd.Parameters["@ContactID"].Value;
+                }
+                catch (Exception)
+                {
+                    throw new ApplicationException("Something went wrong when attempting to add a contact");
+                }
+            }
         }
 
         public void UpdateContact(Contact contact)
         {
-            throw new NotImplementedException();
+            using (SqlConnection connection = CreateConnection())
+            {
+                try
+                {
+                    SqlCommand cmd = new SqlCommand("Person.uspUpdateContact");
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@FirstName", SqlDbType.VarChar, 50).Value = contact.FirstName;
+                    cmd.Parameters.Add("@LastName", SqlDbType.VarChar, 50).Value = contact.FirstName;
+                    cmd.Parameters.Add("@EmailAdress", SqlDbType.VarChar, 50).Value = contact.FirstName;
+
+                    cmd.Parameters.Add("@ContactID", SqlDbType.Int, 4).Value = contact.ContactID;
+
+                    connection.Open();
+
+                    cmd.ExecuteNonQuery();
+                    //Klar?
+                }
+                catch (Exception)
+                {
+                    throw new ApplicationException("Something went wrong when attempting to update a contact");
+                }
+            }
         }
     }
 }
