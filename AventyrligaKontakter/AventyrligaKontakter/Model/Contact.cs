@@ -11,9 +11,9 @@ namespace AventyrligaKontakter.Model
         public int ContactID { get; set; }
 
         [Required(ErrorMessage = "Mail fältet måste vara ifyllt.")]
-        [RegularExpression("[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}", ErrorMessage = "Inmatningen matchar inte en Mail adress.")]
-        [StringLength(50, ErrorMessage = "Fältets längd måste vara emellan 1 och 50 tecken.")] // Reg ex for mail
-        public string EmailAdress { get; set; }
+        [RegularExpression("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}", ErrorMessage = "Inmatningen matchar inte en Mail adress.")]
+        [StringLength(50, ErrorMessage = "Fältets längd måste vara emellan 1 och 50 tecken.")]
+        public string EmailAddress { get; set; }
 
         [Required(ErrorMessage = "Fältet måste vara ifyllt.")]
         [StringLength(50, ErrorMessage = "Fältets längd måste vara emellan 1 och 50 tecken.")]

@@ -17,12 +17,19 @@ namespace AventyrligaKontakter
             get { return _service ?? (_service = new Service()); }
         }
 
+        private string Status
+        {
+            get { return Session["Status"] as string; }
+            set { Session["Status"] = value; }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["Success"] as bool? == true)
+            if (Session["Status"] != null)
             {
-                ResultLabel.Visible = true;
-                Session.Remove("Success"); //Fixa så rätt meddelande visas vid updatering etc.
+                Panel1.Visible = true;
+                ResultLabel.Text = Status;
+                Session.Remove("Status");
             }
         }
 
@@ -57,8 +64,8 @@ namespace AventyrligaKontakter
                 {
                     ModelState.AddModelError(String.Empty, "Ett fel inträffade när inläsningen av kontakter skulle utföras.");
                 }
-                Session["Success"] = true;
-                Response.Redirect("default.aspx");
+                Session["Status"] = "Kontakten har lagts till.";
+                Response.Redirect("/Default.aspx");
             }
         }
 
@@ -77,8 +84,8 @@ namespace AventyrligaKontakter
                 {
                     Service.SaveContact(contact);
                 }
-                Session["Success"] = true;
-                Response.Redirect("default.aspx");
+                Session["Status"] = "Kontakten har updaterats.";
+                Response.Redirect("/Default.aspx");
             }
             catch (Exception)
             {
@@ -91,18 +98,13 @@ namespace AventyrligaKontakter
             try
             {
                 Service.DeleteContact(contactID);
-                Session["Success"] = true;
-                Response.Redirect("default.aspx");
+                Session["Status"] = "Kontakten har raderats.";
+                Response.Redirect("/Default.aspx");
             }
             catch (Exception)
             {
                 ModelState.AddModelError(String.Empty, "Ett fel inträffade när borttagning av en kontakt skulle utföras.");
             }
-        }
-
-        protected void RemoveLabelButton_Click(object sender, EventArgs e)
-        {
-            ResultLabel.Visible = false;
         }
     }
 }

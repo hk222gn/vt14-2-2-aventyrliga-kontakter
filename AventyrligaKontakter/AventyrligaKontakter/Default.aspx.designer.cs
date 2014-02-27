@@ -40,6 +40,15 @@ namespace AventyrligaKontakter {
         protected global::System.Web.UI.WebControls.ValidationSummary EditValidationSummary;
         
         /// <summary>
+        /// Panel1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel Panel1;
+        
+        /// <summary>
         /// ResultLabel control.
         /// </summary>
         /// <remarks>
@@ -49,13 +58,13 @@ namespace AventyrligaKontakter {
         protected global::System.Web.UI.WebControls.Label ResultLabel;
         
         /// <summary>
-        /// RemoveLabelButton control.
+        /// ImageButton1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button RemoveLabelButton;
+        protected global::System.Web.UI.WebControls.ImageButton ImageButton1;
         
         /// <summary>
         /// ContactListView control.

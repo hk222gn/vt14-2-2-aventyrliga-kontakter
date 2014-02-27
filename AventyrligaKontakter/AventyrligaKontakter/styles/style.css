@@ -1,7 +1,13 @@
 ﻿body {
+    background-color:#E0E0E0;
 }
 
 #main {
     display:block;
     margin:0 auto;
+    width:40%;
+}
+
+h1 {
+    text-align:center;
 }
